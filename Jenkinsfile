@@ -7,8 +7,19 @@ node {
             sh 'mvn -B -DskipTests clean package'
         }
         stage('Test') {            
-        sh 'mvn test'
-        junit 'target/surefire-reports/*.xml'
-        }     
+            sh 'mvn test'
+            junit 'target/surefire-reports/*.xml'
+        }
+        stage('Manual Approval') {            
+            input(message:'Lanjutkan ke tahap Deploy?', ok:'Proceed')
+            // junit 'target/surefire-reports/*.xml'
+            // Proceed (melanjutkan eksekusi pipeline ke tahap Deploy)
+            // Abort (menghentikan eksekusi pipeline)
+        }
+        stage('Deploy') {       
+            sh 'mvn test'
+            sh './jenkins/scripts/deliver.sh'
+            sleep time: 1, unit: 'MINUTES'
+        }   
     }
 }
